@@ -23,7 +23,7 @@ public class JwtKeyService {
     }
 
     @PostConstruct
-    public void init() throws NoSuchAlgorithmException {
+    public void init() {
         loadSecretKey();
     }
 
@@ -60,7 +60,7 @@ public class JwtKeyService {
     }
 
     public String generateSecretKey() {
-        KeyGenerator keyGen = null;
+        KeyGenerator keyGen;
         try {
             keyGen = KeyGenerator.getInstance("HmacSHA256");
 

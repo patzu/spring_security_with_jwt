@@ -41,7 +41,7 @@ public class JwtUtil {
         }
     }
 
-    public String getUsernameFromToken(String token) throws Exception {
+    public String getUsernameFromToken(String token) {
         SecretKey secretKey = jwtKeyService.getCachedKey();
         Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
         return claims.getSubject();
