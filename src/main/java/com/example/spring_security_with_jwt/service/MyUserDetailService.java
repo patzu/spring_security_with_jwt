@@ -1,7 +1,7 @@
-package com.example.spring_security_basics.service;
+package com.example.spring_security_with_jwt.service;
 
-import com.example.spring_security_basics.model.MyUser;
-import com.example.spring_security_basics.repository.MyUserRepository;
+import com.example.spring_security_with_jwt.entity.MyUser;
+import com.example.spring_security_with_jwt.repository.MyUserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,6 +26,7 @@ public class MyUserDetailService implements UserDetailsService {
         Optional<MyUser> myUserOptional = myUserRepository.findByUsername(username);
         if (myUserOptional.isPresent()) {
             MyUser myUser = myUserOptional.get();
+
             return User.builder()
                     .username(myUser.getUsername())
                     .password(myUser.getPassword())

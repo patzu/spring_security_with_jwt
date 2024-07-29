@@ -1,4 +1,4 @@
-package com.example.spring_security_basics.controller;
+package com.example.spring_security_with_jwt.controller;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
