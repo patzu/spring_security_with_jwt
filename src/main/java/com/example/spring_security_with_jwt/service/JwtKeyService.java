@@ -51,24 +51,25 @@ public class JwtKeyService {
     }
 
     public String generateSecretKeyAndSaveItToDB() {
+        String secretKey = generateSecretKey();
+
+        SecretKeyEntity secretKeyEntity = SecretKeyEntity.builder().secretKey(secretKey).createdAt(LocalDateTime.now()).build();
+        jwtKeyRepository.save(secretKeyEntity);
+        loadSecretKey();
+        return secretKey;
+    }
+
+    public String generateSecretKey() {
         KeyGenerator keyGen = null;
         try {
             keyGen = KeyGenerator.getInstance("HmacSHA256");
 
             keyGen.init(256);
             SecretKey secretKey = keyGen.generateKey();
-            String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
 
-            SecretKeyEntity secretKeyEntity = SecretKeyEntity.builder()
-                    .secretKey(encodedKey)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            jwtKeyRepository.save(secretKeyEntity);
-            loadSecretKey();
-            return encodedKey;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error instantiating Key generator object!");
         }
     }
-
 }

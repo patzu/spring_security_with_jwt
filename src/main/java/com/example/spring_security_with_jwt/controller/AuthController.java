@@ -1,11 +1,12 @@
 package com.example.spring_security_with_jwt.controller;
 
-import com.example.spring_security_with_jwt.model.AuthenticationRequest;
+import com.example.spring_security_with_jwt.model.AuthRequest;
 import com.example.spring_security_with_jwt.model.AuthenticationResponse;
-import com.example.spring_security_with_jwt.service.JwtKeyService;
 import com.example.spring_security_with_jwt.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,24 +24,32 @@ public class AuthController {
 
     private final JwtUtil jwtUtil;
 
-    private final JwtKeyService jwtKeyService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, JwtKeyService jwtKeyService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.jwtKeyService = jwtKeyService;
     }
 
     @PostMapping("/api/auth/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         try {
             // Validate user credentials
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
             // Generate JWT token
             final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            final String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
+            final String jwtToken = jwtUtil.generateJwtToken(userDetails.getUsername());
+
+            ResponseCookie responseCookie = ResponseCookie.from("jwt", jwtToken)
+                    .secure(true)
+                    .httpOnly(true)
+                    .path("/")
+                    .maxAge(7 * 24 * 60 * 60)
+                    .sameSite("strict")
+                    .build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
             return ResponseEntity.ok(new AuthenticationResponse(jwtToken));
         } catch (AuthenticationException e) {

@@ -2,7 +2,9 @@ package com.example.spring_security_with_jwt.util;
 
 import com.example.spring_security_with_jwt.exception.TokenValidationException;
 import com.example.spring_security_with_jwt.service.JwtKeyService;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,7 +19,7 @@ public class JwtUtil {
         this.jwtKeyService = jwtKeyService;
     }
 
-    public String generateToken(String username)  {
+    public String generateJwtToken(String username) {
         SecretKey secretKey = jwtKeyService.getCachedKey();
         return Jwts.builder()
                 .subject(username)
