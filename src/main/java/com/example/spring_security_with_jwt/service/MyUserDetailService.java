@@ -22,18 +22,18 @@ public class MyUserDetailService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<MyUser> myUserOptional = myUserRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        Optional<MyUser> myUserOptional = myUserRepository.findByUserName(userName);
         if (myUserOptional.isPresent()) {
             MyUser myUser = myUserOptional.get();
 
             return User.builder()
-                    .username(myUser.getUsername())
+                    .username(myUser.getUserName())
                     .password(myUser.getPassword())
                     .roles(myUser.getRoles().split(","))
                     .build();
         } else {
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException(userName);
         }
     }
 

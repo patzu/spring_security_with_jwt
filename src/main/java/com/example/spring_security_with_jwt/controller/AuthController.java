@@ -1,7 +1,7 @@
 package com.example.spring_security_with_jwt.controller;
 
-import com.example.spring_security_with_jwt.model.AuthRequest;
-import com.example.spring_security_with_jwt.model.AuthenticationResponse;
+import com.example.spring_security_with_jwt.dtos.AuthRequestDto;
+import com.example.spring_security_with_jwt.dtos.AuthResponseDto;
 import com.example.spring_security_with_jwt.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -31,11 +31,11 @@ public class AuthController {
     }
 
     @PostMapping("/api/auth/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+    public ResponseEntity<?> authenticateUser(@RequestBody AuthRequestDto authRequestDto, HttpServletResponse response) {
         try {
             // Validate user credentials
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(authRequestDto.userName(), authRequestDto.password()));
 
             // Generate JWT token
             final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -51,7 +51,7 @@ public class AuthController {
 
             response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
-            return ResponseEntity.ok(new AuthenticationResponse(jwtToken));
+            return ResponseEntity.ok(new AuthResponseDto(jwtToken));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         } catch (Exception e) {
