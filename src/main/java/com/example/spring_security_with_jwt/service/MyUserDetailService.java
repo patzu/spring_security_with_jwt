@@ -33,7 +33,7 @@ public class MyUserDetailService implements UserDetailsService {
                     .roles(myUser.getRoles().split(","))
                     .build();
         } else {
-            throw new UsernameNotFoundException(userName);
+            throw new UsernameNotFoundException("User not found with username: "+userName);
         }
     }
 
